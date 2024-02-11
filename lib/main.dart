@@ -11,105 +11,173 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
-      theme: ThemeData(
-        // This is the theme of your application.
-        //
-        // Try running your application with "flutter run". You'll see the
-        // application has a blue toolbar. Then, without quitting the app, try
-        // changing the primarySwatch below to Colors.green and then invoke
-        // "hot reload" (press "r" in the console where you ran "flutter run",
-        // or simply save your changes to "hot reload" in a Flutter IDE).
-        // Notice that the counter didn't reset back to zero; the application
-        // is not restarted.
-        primarySwatch: Colors.blue,
+      home: Calculator(),
+      );
+    
+  }
+}
+
+class Calculator extends StatefulWidget{
+  _CalculatorState createState() => _CalculatorState();
+}
+
+class _CalculatorState extends State<Calculator>{
+
+//It will return the particular button whose context is passed
+Widget buttons(String buttontext, Color buttoncolor, Color textColor){
+  return Container(
+    child: ElevatedButton(
+      onPressed: (){
+
+      },
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(CircleBorder()),
+        backgroundColor: MaterialStateProperty.all(buttoncolor),
+        padding: MaterialStateProperty.all(EdgeInsets.all(10.0)),
+        fixedSize: MaterialStateProperty.all(Size(70, 70)),
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
-    );
-  }
+      //styling text displayed on button
+      child: Text(buttontext,
+      style: TextStyle(
+        fontSize: 30,
+        color: textColor,
+      )
+      ),
+
+      //styling button
+     
+    ),
+  );
+  
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
+//Separate for '0' because it has a different shape
+Widget zerobutton(String buttontext, Color buttoncolor, Color textColor){
+  return Container(
+    child: ElevatedButton(
+      onPressed: (){
 
-  // This widget is the home page of your application. It is stateful, meaning
-  // that it has a State object (defined below) that contains fields that affect
-  // how it looks.
+      },
+      style: ButtonStyle(
+        shape: MaterialStateProperty.all(StadiumBorder()),
+        backgroundColor: MaterialStateProperty.all(buttoncolor),
+        padding: MaterialStateProperty.all(EdgeInsets.fromLTRB(34, 20, 128, 20)),
+      ),
+      //styling text displayed on button
+      child: Text(buttontext,
+      style: TextStyle(
+        fontSize: 30,
+        color: textColor,
+      )
+      ),
 
-  // This class is the configuration for the state. It holds the values (in this
-  // case the title) provided by the parent (in this case the App widget) and
-  // used by the build method of the State. Fields in a Widget subclass are
-  // always marked "final".
-
-  final String title;
-
-  @override
-  State<MyHomePage> createState() => _MyHomePageState();
+      //styling button
+     
+    ),
+  );
+  
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
 
-  void _incrementCounter() {
-    setState(() {
-      // This call to setState tells the Flutter framework that something has
-      // changed in this State, which causes it to rerun the build method below
-      // so that the display can reflect the updated values. If we changed
-      // _counter without calling setState(), then the build method would not be
-      // called again, and so nothing would appear to happen.
-      _counter++;
-    });
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    // This method is rerun every time setState is called, for instance as done
-    // by the _incrementCounter method above.
-    //
-    // The Flutter framework has been optimized to make rerunning build methods
-    // fast, so that you can just rebuild anything that needs updating rather
-    // than having to individually change instances of widgets.
+  Widget build(BuildContext context){
     return Scaffold(
-      appBar: AppBar(
-        // Here we take the value from the MyHomePage object that was created by
-        // the App.build method, and use it to set our appbar title.
-        title: Text(widget.title),
-      ),
-      body: Center(
-        // Center is a layout widget. It takes a single child and positions it
-        // in the middle of the parent.
+      
+      //assigning the background colour
+      backgroundColor: Colors.black,
+
+      appBar: AppBar(title: Text("Calculator"), backgroundColor: Colors.black),
+      body: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 5.0),
         child: Column(
-          // Column is also a layout widget. It takes a list of children and
-          // arranges them vertically. By default, it sizes itself to fit its
-          // children horizontally, and tries to be as tall as its parent.
-          //
-          // Invoke "debug painting" (press "p" in the console, choose the
-          // "Toggle Debug Paint" action from the Flutter Inspector in Android
-          // Studio, or the "Toggle Debug Paint" command in Visual Studio Code)
-          // to see the wireframe for each widget.
-          //
-          // Column has various properties to control how it sizes itself and
-          // how it positions its children. Here we use mainAxisAlignment to
-          // center the children vertically; the main axis here is the vertical
-          // axis because Columns are vertical (the cross axis would be
-          // horizontal).
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
-            ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
-            ),
-          ],
-        ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
-      ), // This trailing comma makes auto-formatting nicer for build methods.
-    );
+          mainAxisAlignment: MainAxisAlignment.end,
+          children: [
+
+            //creating the UI for the final answer that will be displayed
+            Row(
+                mainAxisAlignment: MainAxisAlignment.end,
+                children: [
+                  Padding(
+                    padding: EdgeInsets.all(30.0),
+                    child: Text('0', textAlign: TextAlign.left,  style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 100
+                    )
+                    )
+                    )
+                ],
+              ),
+
+              Row(
+                
+                //calling out button widget function(buttons) in order to display the buttons on the screen evenly
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children:[
+                  buttons('AC', Colors.grey, Colors.black),
+                  buttons('+/-', Colors.grey, Colors.black),
+                  buttons('%', Colors.grey, Colors.black),
+                  buttons('÷', Colors.amber[700]!, Colors.white),
+                ]
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+              Row(
+                
+                //calling out button widget function(buttons) in order to display the buttons on the screen evenly
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children:[
+                  buttons('7', Colors.grey[850]!, Colors.white),
+                  buttons('8', Colors.grey[850]!, Colors.white),
+                  buttons('9', Colors.grey[850]!, Colors.white),
+                  buttons('×', Colors.amber[700]!, Colors.white),
+                ]
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                Row(
+                
+                //calling out button widget function(buttons) in order to display the buttons on the screen evenly
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children:[
+                  buttons('4', Colors.grey[850]!, Colors.white),
+                  buttons('5', Colors.grey[850]!, Colors.white),
+                  buttons('6', Colors.grey[850]!, Colors.white),
+                  buttons('-', Colors.amber[700]!, Colors.white),
+                ]
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                Row(
+                
+                //calling out button widget function(buttons) in order to display the buttons on the screen evenly
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children:[
+                  buttons('1', Colors.grey[850]!, Colors.white),
+                  buttons('2', Colors.grey[850]!, Colors.white),
+                  buttons('3', Colors.grey[850]!, Colors.white),
+                  buttons('+', Colors.amber[700]!, Colors.white),
+                ]
+                ),
+                SizedBox(
+                  height: 18,
+                ),
+                  Row(
+                
+                //calling out button widget function(buttons) in order to display the buttons on the screen evenly
+                mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                children:[
+                  zerobutton('0', Colors.grey[850]!, Colors.white),
+                  buttons('.', Colors.grey[850]!, Colors.white),
+                  buttons('=', Colors.amber[700]!, Colors.white),
+                ]
+                ),
+                SizedBox(
+                  height: 18,
+                )
+            
+          ]
+        ))
+
+        );
   }
 }
