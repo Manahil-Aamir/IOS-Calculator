@@ -35,6 +35,7 @@ dynamic finalresult = 0;
 dynamic operation = '';
 dynamic prevoperation = '';
 bool val = false;
+bool isOperation = false;
 
 //calculator basic calculations logic
 void calculations(buttontext){
@@ -45,6 +46,7 @@ void calculations(buttontext){
     displayresult = 0;
     finalresult = 0;
     val = false;
+    isOperation = false;
   }
 
   else if(buttontext == '+/-')
@@ -53,6 +55,11 @@ void calculations(buttontext){
 }
 
  else if(buttontext == '+' || buttontext == '-' || buttontext == '×' || buttontext == '÷' || buttontext == '%' || buttontext == '=' ){
+ 
+ if(isOperation){
+  operation = buttontext;
+ }
+ else{
   prevoperation = operation;
   operation = buttontext;
   val = true;
@@ -71,7 +78,8 @@ void calculations(buttontext){
     else if(prevoperation == '%'){
     _percent();
   }
-
+ }
+  isOperation = true;
 }
 
 else{
@@ -82,11 +90,17 @@ else{
     numbertwo = numbertwo.startsWith('0') ? buttontext : numbertwo + buttontext;
     finalresult = numbertwo;
   }
+  isOperation = false;
 }
 _format(finalresult.toString());
 setState(() {
   finalresult = finalresult;
-  displayresult = displayresult;
+  if(finalresult == 'Error'){
+    displayresult = 'Error';
+  }
+  else{
+    displayresult = displayresult;
+  }
 });
 }
 
@@ -109,9 +123,16 @@ void _multiply(){
 }
 
 void _divide(){
-  finalresult = _parseNumber(numberone) / _parseNumber(numbertwo);
-  numberone = finalresult.toString();
-  numbertwo = '0';
+  if(_parseNumber(numbertwo)==0)  {
+    finalresult = 'Error';
+    numberone = '0';
+    numbertwo = '0';
+  }
+  else{
+    finalresult = _parseNumber(numberone) / _parseNumber(numbertwo);
+    numberone = finalresult.toString();
+    numbertwo = '0';
+  }
 }
 
 void _percent(){
@@ -133,20 +154,22 @@ num _parseNumber(String number) {
 }
 
 void _format(String number) {
-  num numValue = num.parse(number);
-  String str;
-  if (numValue is int) {
-    str = numValue.toString();
-    str = str.length > 9 ? str.substring(0, 9) : str;
-  } else {
-    str = numValue.toStringAsFixed(9);
-    List<String> parts = str.split('.');
-    parts[0] = parts[0].length > 9 ? parts[0].substring(0, 9) : parts[0];
-    parts[1] = parts[1].length > 9 ? parts[1].substring(0, 9) : parts[1];
-    str = parts.join('.');
+  if(number != 'Error'){
+    num numValue = num.parse(number);
+    String str;
+    if (numValue is int) {
+      str = numValue.toString();
+      str = str.length > 9 ? str.substring(0, 9) : str;
+    } else {
+      str = numValue.toStringAsFixed(9);
+      List<String> parts = str.split('.');
+      parts[0] = parts[0].length > 9 ? parts[0].substring(0, 9) : parts[0];
+      parts[1] = parts[1].length > 9 ? parts[1].substring(0, 9) : parts[1];
+      str = parts.join('.');
+    }
+    final formatter = NumberFormat("#,###.#########", "en_US");
+    displayresult = formatter.format(double.parse(str));
   }
-  final formatter = NumberFormat("#,###.#########", "en_US");
-  displayresult = formatter.format(double.parse(str));
 }
 
 //It will return the particular button whose context is passed
@@ -155,6 +178,9 @@ Widget buttons(String buttontext, Color buttoncolor, Color textColor){
     child: ElevatedButton(
       onPressed: (){
           calculations(buttontext);
+          Color temp = buttoncolor;
+          buttoncolor = textColor;
+          textColor = temp;
       },
       style: ButtonStyle(
         shape: MaterialStateProperty.all(CircleBorder()),
