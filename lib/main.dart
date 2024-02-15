@@ -50,9 +50,10 @@ void calculations(buttontext){
     isOperation = false;
   }
 
-  else if(buttontext == '+/-')
+  else if(buttontext == '+/-' || buttontext == '%')
 {
-  _signchange();
+ if(buttontext == '+/-') _signchange();
+ else  _percent();
 }
 
  else if(buttontext == '+' || buttontext == '-' || buttontext == '×' || buttontext == '÷' || buttontext == '%' || buttontext == '=' ){
@@ -75,9 +76,6 @@ void calculations(buttontext){
   }
     else if(prevoperation == '÷'){
     _divide();
-  }
-    else if(prevoperation == '%'){
-    _percent();
   }
  }
   isOperation = true;
@@ -251,7 +249,7 @@ Widget zerobutton(String buttontext, Color buttoncolor, Color textColor){
       //assigning the background colour
       backgroundColor: Colors.black,
 
-      appBar: AppBar(title: Text("Calculator"), backgroundColor: Colors.black),
+      appBar: AppBar(backgroundColor: Colors.black),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 5.0),
         child: Column(
@@ -259,22 +257,22 @@ Widget zerobutton(String buttontext, Color buttoncolor, Color textColor){
           children: [
 
             //creating the UI for the final answer that will be displayed
-          Row(
-  mainAxisAlignment: MainAxisAlignment.end,
-  children: [
-    Expanded(
-      child: Padding(
-        padding: EdgeInsets.all(30.0),
-        child: AutoSizeText(
-          '$displayresult',
-          textAlign: TextAlign.right,
-          style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 90),
-          maxLines: 1,
-        ),
+                Row(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          Expanded(
+            child: Padding(
+              padding: EdgeInsets.all(30.0),
+              child: AutoSizeText(
+                '$displayresult',
+                textAlign: TextAlign.right,
+                style: TextStyle(color: Color(0xFFFFFFFF), fontSize: 90),
+                maxLines: 1,
+              ),
+            ),
+          ),
+        ],
       ),
-    ),
-  ],
-),
 
 
 
