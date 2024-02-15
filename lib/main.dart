@@ -36,10 +36,11 @@ dynamic operation = '';
 dynamic prevoperation = '';
 bool val = false;
 bool isOperation = false;
+dynamic lastpressed = '';
 
 //calculator basic calculations logic
 void calculations(buttontext){
-
+  lastpressed = buttontext;
   if(buttontext == 'AC'){
     numberone = '0';
     numbertwo = '0';
@@ -157,7 +158,11 @@ void _format(String number) {
   if(number != 'Error'){
     num numValue = num.parse(number);
     String str;
-    if (numValue is int) {
+    if (numValue.abs() > 100000000 || (numValue.abs() < 0.000000001 && numValue.abs() > 0)) {
+      // Use scientific notation for very large and very small numbers
+      displayresult = numValue.toStringAsExponential(9);
+    } else{
+      if (numValue is int) {
       str = numValue.toString();
       str = str.length > 9 ? str.substring(0, 9) : str;
     } else {
@@ -170,33 +175,32 @@ void _format(String number) {
     final formatter = NumberFormat("#,###.#########", "en_US");
     displayresult = formatter.format(double.parse(str));
   }
+  }
 }
+
 
 //It will return the particular button whose context is passed
 Widget buttons(String buttontext, Color buttoncolor, Color textColor){
+  bool colorcondition = (buttontext==lastpressed) && (buttontext == '+' || buttontext == '-' || buttontext == '×' || buttontext == '÷');
+  bool textcondition = (buttontext == 'AC' && numbertwo != '0') || (buttontext == 'AC' && numberone != '0');
   return Container(
     child: ElevatedButton(
       onPressed: (){
           calculations(buttontext);
-          Color temp = buttoncolor;
-          buttoncolor = textColor;
-          textColor = temp;
       },
       style: ButtonStyle(
         shape: MaterialStateProperty.all(CircleBorder()),
-        backgroundColor: MaterialStateProperty.all(buttoncolor),
+        backgroundColor: MaterialStateProperty.all(!colorcondition ? buttoncolor : textColor),
         padding: MaterialStateProperty.all(EdgeInsets.all(10.0)),
         fixedSize: MaterialStateProperty.all(Size(70, 70)),
       ),
       //styling text displayed on button
-      child: Text(buttontext,
+      child: Text((textcondition ? 'C' : buttontext),
       style: TextStyle(
         fontSize: 30,
-        color: textColor,
+        color: (!colorcondition ? textColor : buttoncolor),
       )
       ),
-
-      //styling button
      
     ),
   );
