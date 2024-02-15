@@ -85,14 +85,19 @@ void calculations(buttontext){
 
 else{
  if (!val) {
+  if (!(numberone.endsWith('.') && buttontext == '.'))
     numberone = numberone.startsWith('0') ? buttontext : numberone + buttontext;
     finalresult = numberone;
-  } else {
+  } 
+  else {
+    if (!(numbertwo.endsWith('.') && buttontext == '.'))
     numbertwo = numbertwo.startsWith('0') ? buttontext : numbertwo + buttontext;
     finalresult = numbertwo;
   }
+
   isOperation = false;
 }
+
 _format(finalresult.toString());
 setState(() {
   finalresult = finalresult;
@@ -156,6 +161,10 @@ num _parseNumber(String number) {
 
 void _format(String number) {
   if(number != 'Error'){
+    if(number.endsWith('.') ){
+      displayresult = number;
+    }
+    else{
     num numValue = num.parse(number);
     String str;
     if (numValue.abs() > 100000000 || (numValue.abs() < 0.000000001 && numValue.abs() > 0)) {
@@ -176,6 +185,7 @@ void _format(String number) {
     displayresult = formatter.format(double.parse(str));
   }
   }
+}
 }
 
 
