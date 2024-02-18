@@ -26,45 +26,59 @@ class Calculator extends StatefulWidget{
 
 class _CalculatorState extends State<Calculator>{
 
-//variables
+//variable declarations
 dynamic value = '0';
-String numberone = '0';
-String numbertwo = '0';
-dynamic displayresult = 0;
-dynamic finalresult = 0;
-dynamic operation = '';
-dynamic prevoperation = '';
+String numberone = '0'; //first number
+String numbertwo = '0'; //second number
+dynamic displayresult = 0; //displayed output on screen
+dynamic finalresult = 0; //final output
+dynamic operation = ''; //current operation
+dynamic prevoperation = ''; //previous operation
 bool val = false;
-bool isOperation = false;
-dynamic lastpressed = '';
+bool isOperation = false; 
+dynamic lastpressed = ''; //last pressed value
+String tempnumber = '0'; //Store value of numbertwo in case equals is pressed consecutively
 
 //calculator basic calculations logic
 void calculations(buttontext){
   lastpressed = buttontext;
+
+  //when button AC is pressed
   if(buttontext == 'AC'){
     numberone = '0';
     numbertwo = '0';
+    tempnumber = '0';
     displayresult = 0;
     finalresult = 0;
     val = false;
     isOperation = false;
   }
 
+//conditions for '+/-' and '%
   else if(buttontext == '+/-' || buttontext == '%')
 {
  if(buttontext == '+/-') _signchange();
  else  _percent();
 }
 
- else if(buttontext == '+' || buttontext == '-' || buttontext == '×' || buttontext == '÷' || buttontext == '%' || buttontext == '=' ){
+//Conditions for other four basic operations ('+', '-', '×', '÷')
+ else if(buttontext == '+' || buttontext == '-' || buttontext == '×' || buttontext == '÷' || buttontext == '=' ){
  
- if(isOperation){
+ //Considering the last operation in series of operations without any number
+ if(isOperation && !(buttontext=='=' && operation=='=')){
   operation = buttontext;
  }
  else{
+  if(!(buttontext=='=' && operation=='=')){
   prevoperation = operation;
   operation = buttontext;
+  }
+  else{
+    numbertwo = tempnumber;
+  }
+  print(prevoperation + " " + numberone + " "+numbertwo);
   val = true;
+  //Checking which  type of operation it is (addition, subtraction, multiplication, division)
   if(prevoperation == '+'){
       _add();
     }
@@ -81,14 +95,16 @@ void calculations(buttontext){
   isOperation = true;
 }
 
+//taking input of numberone and numbertwo
+//condition: not contain more than one decimal
 else{
  if (!val) {
-  if (!(numberone.endsWith('.') && buttontext == '.'))
+  if (!(numberone.contains('.') && buttontext == '.'))
     numberone = numberone.startsWith('0') ? buttontext : numberone + buttontext;
     finalresult = numberone;
   } 
   else {
-    if (!(numbertwo.endsWith('.') && buttontext == '.'))
+    if (!(numbertwo.contains('.') && buttontext == '.'))
     numbertwo = numbertwo.startsWith('0') ? buttontext : numbertwo + buttontext;
     finalresult = numbertwo;
   }
@@ -96,7 +112,10 @@ else{
   isOperation = false;
 }
 
+//formatting according to calculator format
 _format(finalresult.toString());
+
+//setting state of final result and result to be displayed on screen
 setState(() {
   finalresult = finalresult;
   if(finalresult == 'Error'){
@@ -108,47 +127,61 @@ setState(() {
 });
 }
 
+//method of addition
 void _add(){
   finalresult = _parseNumber(numberone) + _parseNumber(numbertwo);
   numberone = finalresult.toString();
+  tempnumber = numbertwo;
   numbertwo = '0';
 }
 
+//method of subtraction
 void _subtract(){
   finalresult = _parseNumber(numberone) - _parseNumber(numbertwo);
   numberone = finalresult.toString();
+  tempnumber = numbertwo;
   numbertwo = '0';
 }
 
+//method of multiplication
 void _multiply(){
   finalresult = _parseNumber(numberone) * _parseNumber(numbertwo);
   numberone = finalresult.toString();
+  tempnumber = numbertwo;
   numbertwo = '0';
 }
 
+//method of division
 void _divide(){
+
+  //handling divide by zero
   if(_parseNumber(numbertwo)==0)  {
     finalresult = 'Error';
     numberone = '0';
     numbertwo = '0';
+    tempnumber = '0';
   }
   else{
     finalresult = _parseNumber(numberone) / _parseNumber(numbertwo);
     numberone = finalresult.toString();
+    tempnumber = numbertwo;
     numbertwo = '0';
   }
 }
 
+//method of percentage
 void _percent(){
   finalresult = finalresult * 0.01;
   numberone = finalresult.toString();
 }
 
+//method of sign change
 void _signchange(){
   finalresult = finalresult*-1;
   numberone = finalresult.toString();
 }
 
+//making number double or int as per number format
 num _parseNumber(String number) {
   if (number.contains('.')) {
     return double.parse(number);
@@ -157,6 +190,7 @@ num _parseNumber(String number) {
   }
 }
 
+//formatting number according to calculator format
 void _format(String number) {
   if(number != 'Error'){
     if(number.endsWith('.') ){
@@ -169,6 +203,7 @@ void _format(String number) {
       // Use scientific notation for very large and very small numbers
       displayresult = numValue.toStringAsExponential(9);
     } else{
+      //number formatting method depending on double or int
       if (numValue is int) {
       str = numValue.toString();
       str = str.length > 9 ? str.substring(0, 9) : str;
@@ -189,13 +224,16 @@ void _format(String number) {
 
 //It will return the particular button whose context is passed
 Widget buttons(String buttontext, Color buttoncolor, Color textColor){
+  //Some specific changes to some buttoms when they are pressed
   bool colorcondition = (buttontext==lastpressed) && (buttontext == '+' || buttontext == '-' || buttontext == '×' || buttontext == '÷');
+  //AC turned to 'C' when a digit is entered
   bool textcondition = (buttontext == 'AC' && numbertwo != '0') || (buttontext == 'AC' && numberone != '0');
   return Container(
     child: ElevatedButton(
       onPressed: (){
           calculations(buttontext);
       },
+      //button styling
       style: ButtonStyle(
         shape: MaterialStateProperty.all(CircleBorder()),
         backgroundColor: MaterialStateProperty.all(!colorcondition ? buttoncolor : textColor),
@@ -215,13 +253,14 @@ Widget buttons(String buttontext, Color buttoncolor, Color textColor){
   
 }
 
-//Separate for '0' because it has a different shape
+//Separate widget for '0' because it has a different shape
 Widget zerobutton(String buttontext, Color buttoncolor, Color textColor){
   return Container(
     child: ElevatedButton(
       onPressed: (){
           calculations(buttontext);
       },
+      //button styling
       style: ButtonStyle(
         shape: MaterialStateProperty.all(StadiumBorder()),
         backgroundColor: MaterialStateProperty.all(buttoncolor),
@@ -235,8 +274,6 @@ Widget zerobutton(String buttontext, Color buttoncolor, Color textColor){
       )
       ),
 
-      //styling button
-     
     ),
   );
   
@@ -252,6 +289,7 @@ Widget zerobutton(String buttontext, Color buttoncolor, Color textColor){
       appBar: AppBar(backgroundColor: Colors.black),
       body: Padding(
         padding: EdgeInsets.symmetric(horizontal: 5.0),
+        //creating one column and 5 rews witinin it
         child: Column(
           mainAxisAlignment: MainAxisAlignment.end,
           children: [
@@ -259,7 +297,7 @@ Widget zerobutton(String buttontext, Color buttoncolor, Color textColor){
             //creating the UI for the final answer that will be displayed
                 Row(
         mainAxisAlignment: MainAxisAlignment.end,
-        children: [
+ children: [
           Expanded(
             child: Padding(
               padding: EdgeInsets.all(30.0),
